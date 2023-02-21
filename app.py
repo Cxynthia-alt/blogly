@@ -12,6 +12,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
 connect_db(app)
+# db.create_all()
 
 
 @app.route('/')
@@ -25,7 +26,9 @@ def home_page():
 @app.route('/users/<int:user_id>')
 def show_user(user_id):
     user = User.query.get_or_404(user_id)
-    return render_template("details.html", user=user)
+    user_posts = Post.query.filter(
+        Post.user_id == user_id).all()
+    return render_template("details.html", user=user, user_posts=user_posts)
 
 
 @app.route('/users/new')
@@ -65,5 +68,53 @@ def edit_current_user(user_id):
 @app.route('/users/<int:user_id>/delete', methods=["POST"])
 def delete_current_user(user_id):
     User.query.filter_by(id=user_id).delete()
+    db.session.commit()
+    return redirect("/")
+
+
+# Part 2
+
+@app.route('/users/<int:user_id>/posts/new')
+def add_new_post(user_id):
+    user = User.query.get_or_404(user_id)
+    return render_template("add_new_post.html", user=user)
+
+
+@app.route('/users/<int:user_id>/posts/new', methods=["POST"])
+def submit_new_post(user_id):
+    title = request.form["post_title"]
+    content = request.form["post_content"]
+    new_post = Post(title=title, content=content)
+    db.session.add(new_post)
+    db.session.commit()
+    return redirect(f"/users/{user_id}")
+
+
+@app.route('/posts/<int:post_id>')
+def show_user_post(post_id):
+    post = Post.query.get(post_id)
+    user = User.query.get_or_404(post.user_id)
+    return render_template("user_post.html", post=post, user=user)
+
+
+@app.route('/posts/<int:post_id>/edit')
+def show_edit_post_page(post_id):
+    post = Post.query.get(post_id)
+    return render_template("edit_post.html", post=post)
+
+
+@app.route('/posts/<int:post_id>/edit', methods=["POST"])
+def edit_current_post(post_id):
+    post = Post.query.get(post_id)
+    post.title = request.form["post_title"]
+    post.content = request.form["post_content"]
+    db.session.add(post)
+    db.session.commit()
+    return redirect("/")
+
+
+@app.route('/posts/<int:post_id>/delete', methods=["POST"])
+def delete_current_post(post_id):
+    Post.query.filter(id=post_id).delete()
     db.session.commit()
     return redirect("/")
