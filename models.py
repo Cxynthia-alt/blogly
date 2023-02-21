@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+import datetime
 
 db = SQLAlchemy()
 
@@ -29,3 +30,20 @@ class User(db.Model):
         return f"{self.first_name} {self.last_name}"
 
     # .sort() in SQL
+
+
+class Post(db.Model):
+    __tablename__ = 'posts'
+
+    def __repr__(self):
+        return f"<Post id={self.id} title = {self.title} content = {self.content} created_at={self.created_at}"
+    id = db.Column(db.Integer,
+                   primary_key=True,
+                   autoincrement=True)
+    title = db.Column(db.String(50), nullable=False)
+    content = db.Column(db.String(50), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False,
+                           default=datetime.datetime.now)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    user_posts = db.relationship('User', backref='posts')
