@@ -19,3 +19,11 @@
 .link-button:active {
   color: red;
 }
+
+.container {
+  padding-top: 50px;
+}
+
+.container form {
+  width: 50%;
+}

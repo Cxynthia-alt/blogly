@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Post
+from models import db, connect_db, User, Post, Tag
 
 app = Flask(__name__)
 
@@ -26,6 +26,7 @@ def home_page():
 @app.route('/users/<int:user_id>')
 def show_user(user_id):
     user = User.query.get_or_404(user_id)
+    print(user)
     user_posts = Post.query.filter(
         Post.user_id == user_id).all()
     return render_template("details.html", user=user, user_posts=user_posts)
@@ -115,6 +116,6 @@ def edit_current_post(post_id):
 
 @app.route('/posts/<int:post_id>/delete', methods=["POST"])
 def delete_current_post(post_id):
-    Post.query.filter(id=post_id).delete()
+    Post.query.filter_by(id=post_id).delete()
     db.session.commit()
     return redirect("/")
