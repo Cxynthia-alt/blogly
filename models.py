@@ -39,20 +39,13 @@ class Post(db.Model):
         return f"<Post id={self.id} title={self.title} content= {self.content} created_at={self.created_at}>"
     id = db.Column(db.Integer,
                    primary_key=True,
-
                    autoincrement=True)
     title = db.Column(db.String(50), nullable=False)
     content = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False,
                            default=datetime.datetime.now)
 
-    # user-post relationship
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user_posts = db.relationship('User', backref='posts')
-
-    # post-id relationship
-    post_to_post_tag = db.relationship('post_tags', backref='posts')
-    posts_tags = db.relationship('Tag', secondary='post_tags', backref='posts')
 
 
 class Tag(db.Model):
@@ -66,6 +59,7 @@ class Tag(db.Model):
                    nullable=False,
                    autoincrement=True)
     name = db.Column(db.String(50), nullable=False, unique=True)
+    posts = db.relationship('Post', secondary="post_tags", backref="tags")
 
 
 class PostTag(db.Model):
