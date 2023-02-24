@@ -4,7 +4,12 @@
 
 <h1>{{post.title}}</h1>
 <p>{{post.content}}</p>
-<p>by {{user.full_name}}</p>
+<p>by {{user.full_name}} on {{post.created_at}}</p>
+
+<p><b>Tags:</b>{% for tag_name in tag_names%}
+  {{tag_name}}
+  {% endfor %}
+</p>
 
 <a class="btn btn-outline-info" href="/" role="button">Cancel</a>
 <a class="btn btn-primary" href="/posts/{{post.id}}/edit" role="button">Edit</a>

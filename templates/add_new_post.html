@@ -14,6 +14,19 @@
       <label for="post_content" class="form-label">Post Content</label>
       <textarea class="form-control" id="post_content" name="post_content" rows="3"></textarea>
     </div>
+
+    <div class="form-check">
+      {% for tag_name in tag_names %}
+      <input class="form-check-input" type="checkbox" value="" id="{{tag_name}}">
+      {% endfor %}
+
+      <!-- {% for tag_name in tag_names %}
+      <label class="form-check-label" for="{{tag_name}}">
+        {{tag_name}}
+      </label>
+      {% endfor %} -->
+    </div>
+
   </div>
   <a class="btn btn-outline-info" href="/" role="button">Cancel</a>
   <button type="submit" class="btn btn-success">Add</button>

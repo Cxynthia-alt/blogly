@@ -27,3 +27,7 @@
 .container form {
   width: 50%;
 }
+
+.container .tag_form {
+  width: 100%
+}

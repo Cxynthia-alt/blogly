@@ -38,21 +38,19 @@ post_tag4 = PostTag(post_id=4, tag_id=3)
 
 
 # Add new objects to session, so they'll persist
-db.session.add(whiskey)
-db.session.add(bowser)
-db.session.add(spike)
-db.session.add(post1)
-db.session.add(post2)
-db.session.add(post3)
-db.session.add(post4)
-db.session.add(tag1)
-db.session.add(tag2)
-db.session.add(tag3)
-db.session.add(post_tag1)
-db.session.add(post_tag2)
-db.session.add(post_tag3)
-db.session.add(post_tag4)
+db.session.add_all([whiskey, bowser, spike])
+
+
+db.session.add_all([post1, post2, post3, post4])
+
+
+db.session.add_all([tag1, tag2, tag3])
+
+db.session.commit()
+
+db.session.add_all([post_tag1, post_tag2, post_tag3, post_tag4])
+
+db.session.commit()
 
 
 # Commit--otherwise, this never gets saved!
-db.session.commit()
