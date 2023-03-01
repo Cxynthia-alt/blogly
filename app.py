@@ -78,38 +78,41 @@ def delete_current_user(user_id):
 def add_new_post(user_id):
     user = User.query.get_or_404(user_id)
     tags = Tag.query.all()
-    tag_names = [tag.name for tag in tags]
-    return render_template("add_new_post.html", user=user, tag_names=tag_names)
+    return render_template("add_new_post.html", user=user, tags=tags)
 
 
 @app.route('/users/<int:user_id>/posts/new', methods=["POST"])
 def submit_new_post(user_id):
     title = request.form["post_title"]
     content = request.form["post_content"]
-    new_post = Post(title=title, content=content)
+    new_post = Post(title=title, content=content, user_id=user_id)
     db.session.add(new_post)
+    db.session.commit()
+
+    new_post_tags = [PostTag(post_id=new_post.id, tag_id=int(tag_id))
+                     for tag_id in request.form.getlist("input_tags")]
+    db.session.add_all(new_post_tags)
     db.session.commit()
     return redirect(f"/users/{user_id}")
 
 
 @app.route('/posts/<int:post_id>')
 def show_user_post(post_id):
-    post = Post.query.get(post_id)
+    post = Post.query.get_or_404(post_id)
     user = User.query.get_or_404(post.user_id)
+
     post_tags = PostTag.query.filter_by(post_id=post_id).all()
     tag_ids = [post_tag.tag_id for post_tag in post_tags]
     tags = Tag.query.filter(Tag.id.in_(tag_ids)).all()
     tag_names = [tag.name for tag in tags]
-    # how to get all the tag id from the post_id?
-    # tags is query set: a container contains all the query results/instances
-    # use all() to convert it to a python list
     return render_template("user_post.html", post=post, user=user, tag_names=tag_names)
 
 
 @app.route('/posts/<int:post_id>/edit')
 def show_edit_post_page(post_id):
     post = Post.query.get_or_404(post_id)
-    return render_template("edit_post.html", post=post)
+    tags = Tag.query.all()
+    return render_template("edit_post.html", post=post, tags=tags)
 
 
 @app.route('/posts/<int:post_id>/edit', methods=["POST"])
@@ -117,6 +120,10 @@ def edit_current_post(post_id):
     post = Post.query.get_or_404(post_id)
     post.title = request.form["post_title"]
     post.content = request.form["post_content"]
+
+    tag_ids = request.form.getlist("input_tags")
+    post.tags = Tag.query.filter(Tag.id in tag_ids).all()
+
     db.session.add(post)
     db.session.commit()
     return redirect("/")
