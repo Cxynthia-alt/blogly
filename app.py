@@ -99,13 +99,7 @@ def submit_new_post(user_id):
 @app.route('/posts/<int:post_id>')
 def show_user_post(post_id):
     post = Post.query.get_or_404(post_id)
-    user = User.query.get_or_404(post.user_id)
-
-    post_tags = PostTag.query.filter_by(post_id=post_id).all()
-    tag_ids = [post_tag.tag_id for post_tag in post_tags]
-    tags = Tag.query.filter(Tag.id.in_(tag_ids)).all()
-    tag_names = [tag.name for tag in tags]
-    return render_template("user_post.html", post=post, user=user, tag_names=tag_names)
+    return render_template("user_post.html", post=post)
 
 
 @app.route('/posts/<int:post_id>/edit')

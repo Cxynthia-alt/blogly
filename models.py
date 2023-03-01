@@ -46,6 +46,7 @@ class Post(db.Model):
                            default=datetime.datetime.now)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User', backref="posts")
 
 
 class Tag(db.Model):
